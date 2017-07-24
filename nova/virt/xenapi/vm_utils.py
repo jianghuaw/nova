@@ -1341,12 +1341,6 @@ def _make_uuid_stack():
     return [uuidutils.generate_uuid() for i in range(MAX_VDI_CHAIN_SIZE)]
 
 
-def _default_download_handler():
-    # TODO(sirp):  This should be configurable like upload_handler
-    return importutils.import_object(
-            'nova.virt.xenapi.image.glance.GlanceStore')
-
-
 def get_compression_level():
     level = CONF.xenserver.image_compression_level
     if level is not None and (level < 1 or level > 9):
@@ -1363,7 +1357,8 @@ def _fetch_vhd_image(context, session, instance, image_id):
     LOG.debug("Asking xapi to fetch vhd image %s", image_id,
               instance=instance)
 
-    handler = _default_download_handler()
+    handler = importutils.import_object(
+        CONF.xenserver.image_download_handler)
 
     try:
         vdis = handler.download_image(context, session, instance, image_id)

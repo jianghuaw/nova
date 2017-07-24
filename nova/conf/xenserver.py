@@ -485,6 +485,18 @@ store for use. image_upload_handler takes in a value for the Dom0
 plugin driver. This driver is then called to uplaod images to the
 GlanceStore.
 """),
+    cfg.StrOpt('image_download_handler',
+        default='nova.virt.xenapi.image.glance.GlanceStore',
+        help="""
+The plugin driver used to handle image downloads.
+
+Provide a string value representing a plugin driver required to
+handle the image downloading from Glance.
+
+Images from Glance need to be downloaded to XenServer and create
+disk from the image. This driver is called to download images and
+create disk.
+"""),
 ]
 
 xenapi_volume_utils_opts = [

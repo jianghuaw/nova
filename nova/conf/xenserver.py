@@ -471,6 +471,11 @@ Related options:
 * ``vlan_interface``
 * ``ovs_integration_bridge``
 """),
+    cfg.StrOpt('image_glance_store',
+        default='',
+        help="""
+"""),
+
     # TODO(dharinic): Make this, a stevedore plugin
     cfg.StrOpt('image_upload_handler',
         default='nova.virt.xenapi.image.glance.GlanceStore',
@@ -484,18 +489,6 @@ Images, and snapshots from XenServer need to be uploaded to the data
 store for use. image_upload_handler takes in a value for the Dom0
 plugin driver. This driver is then called to uplaod images to the
 GlanceStore.
-"""),
-    cfg.StrOpt('image_download_handler',
-        default='nova.virt.xenapi.image.glance.GlanceStore',
-        help="""
-The plugin driver used to handle image downloads.
-
-Provide a string value representing a plugin driver required to
-handle the image downloading from Glance.
-
-Images from Glance need to be downloaded to XenServer and create
-disk from the image. This driver is called to download images and
-create disk.
 """),
 ]
 

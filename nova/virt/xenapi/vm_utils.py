@@ -22,6 +22,7 @@ their attributes like VDIs, VIFs, as well as their lookup functions.
 import contextlib
 import math
 import os
+import stevedore
 import time
 import urllib
 from xml.dom import minidom
@@ -1357,8 +1358,10 @@ def _fetch_vhd_image(context, session, instance, image_id):
     LOG.debug("Asking xapi to fetch vhd image %s", image_id,
               instance=instance)
 
-    handler = importutils.import_object(
-        CONF.xenserver.image_download_handler)
+    handler = stevedore.driver.DriverManager(
+        "xenapi.image.glance_store",
+        CONF.xenserver.image_glance_store,
+        invoke_on_load=True).driver
 
     try:
         vdis = handler.download_image(context, session, instance, image_id)

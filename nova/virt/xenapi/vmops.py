@@ -19,6 +19,7 @@ Management class for VM-related functions (spawn, reboot, etc).
 
 import base64
 import functools
+import stevedore
 import time
 import zlib
 
@@ -38,6 +39,7 @@ from oslo_utils import timeutils
 from oslo_utils import units
 import six
 
+from nova.i18n import _LW
 from nova import block_device
 from nova import compute
 from nova.compute import power_state
@@ -152,8 +154,20 @@ class VMOps(object):
 
         LOG.debug("Importing image upload handler: %s",
                   CONF.xenserver.image_upload_handler)
-        self.image_upload_handler = importutils.import_object(
-                                CONF.xenserver.image_upload_handler)
+
+        handler = CONF.xenserver.image_upload_handler
+        try:
+            self.image_upload_handler = stevedore.driver.DriverManager(
+                "xenapi.image.glance_store", handler,
+                invoke_on_load=True).driver
+        except stevedore.exception.NoMatches:
+            self.image_upload_handler = importutils.import_object(
+                handler)
+            LOG.warning(_LW("DEPRECATED: image_upload_handler uses "
+                            "importutils to load %(path)s. This "
+                            "legacy loading style will be removed "
+                            "in the next release."),
+                            {'path': handler})
 
     def agent_enabled(self, instance):
         if CONF.xenserver.disable_agent:
